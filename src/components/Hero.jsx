@@ -50,7 +50,7 @@ function Hero() {
           />
           <br />
           <button className="cta" onClick={handleSubmit} disabled={!profileLink}>
-            Roast Me 🔥
+            Roast Me
           </button>
         </div>
       )}
