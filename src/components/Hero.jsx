@@ -16,7 +16,7 @@ function Hero() {
 
   return (
     <div className="hero">
-      <h1>Is your LinkedIn<br />a red flag?</h1>
+      <h1>From Commits to Cringe:<br />Let’s Review You</h1>
 
       <p className="subtitle">Your connections won't save you now.</p>
 
