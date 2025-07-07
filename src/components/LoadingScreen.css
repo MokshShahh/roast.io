@@ -1,0 +1,32 @@
+.loading-container {
+  height: 100vh;
+  width: 100vw;
+  background-color: #fefefe;
+  font-family: 'Inconsolata', monospace;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 4rem;
+  color: #111;
+}
+
+.line {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.progress-bar {
+  width: 280px;
+  height: 10px;
+  background-color: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.bar {
+  height: 100%;
+  background-color: #111;
+  transition: width 0.2s ease;
+}

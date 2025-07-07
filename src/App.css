@@ -1,29 +1,37 @@
 body {
   margin: 0;
-  font-family: 'Georgia', serif;
-  background: linear-gradient(to bottom, #fdfbfd 0%, #f3f3f3 100%);
+  font-family: 'Recoleta Regular', serif;
+  background-color: white; /* 🔄 override gradient */
   color: #222;
   text-align: center;
+  display: flex;
   justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 2rem;
+  box-sizing: border-box;
 }
 
 .hero h1 {
-  font-size: 3.5rem;
-  margin-top: 2rem;
+  font-size: 3rem;
+  margin-top: 0;
   line-height: 1.2;
   font-family: 'Recoleta Regular';
-  font-weight: 100;
+  font-weight: 400;
 }
 
 .subtitle {
   font-family: monospace;
   font-size: 1.1rem;
   margin: 1rem 0;
-}
-
-.update {
-  color: hotpink;
-  font-weight: bold;
 }
 
 .cta {
@@ -35,30 +43,10 @@ body {
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  margin-top: 1rem;
 }
 
 .cta:hover {
   background-color: hotpink;
   color: black;
-}
-
-
-.album-shelf {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 3rem 0;
-}
-
-.album-shelf img {
-  width: 150px;
-  height: auto;
-  border-radius: 8px;
-}
-
-.footer {
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 2rem;
 }

@@ -1,13 +1,15 @@
+import { Routes, Route } from 'react-router-dom';
 import Hero from './components/Hero';
-import './App.css';
-import './assets/fonts/fonts.css';
-
+import LoadingScreen from './components/LoadingScreen';
+import RevealScreen from './components/RevealScreen';
 
 function App() {
   return (
-    <div className="app">
-      <Hero />
-    </div>
+    <Routes>
+      <Route path="/" element={<Hero />} />
+      <Route path="/loading" element={<LoadingScreen />} />
+      <Route path="/reveal" element={<RevealScreen />} />
+    </Routes>
   );
 }
 
