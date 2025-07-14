@@ -59,12 +59,13 @@
 
 .cta.full:hover {
   transform: scale(1.02);
-  box-shadow: 0px 6px 16px rgba(0,0,0,0.1);
+  box-shadow: 0px 6px 16px rgba(0,0,0,0.4);
 }
 
 .ghost {
   font-size: 0.95rem;
-  background: white;
+  background: white;  text-align: center;
+
   border: none;
   color: #666;
   padding: 0.6rem 1rem;
@@ -77,4 +78,16 @@
 
 .ghost:hover {
   background: #f3f3f3;
+}
+input{
+  background-color: white;
+  border: solid black;
+  border-width: 2px !important;
+}
+input::placeholder{
+  font-family: 'Inconsolata', monospace;
+  color: black;
+}
+.center{
+  text-align: center !important;
 }

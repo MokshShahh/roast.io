@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 import './RevealScreen.css';
 
 function RevealScreen() {
@@ -14,6 +15,10 @@ function RevealScreen() {
   const [showButtons, setShowButtons] = useState(false);
   const [platform, setPlatform] = useState(null);
   const [profileLink, setProfileLink] = useState('');
+  const [roast, setRoast] = useState(false);
+  const [showGithubRepos, setShowGithubRepos] = useState(false)
+  const [githubRepos, setGithubRepos] = useState()
+
 
   useEffect(() => {
     if (currentLine < lines.length) {
@@ -21,7 +26,7 @@ function RevealScreen() {
         const timeout = setTimeout(() => {
           setDisplayedText(prev => prev + lines[currentLine][charIndex]);
           setCharIndex(charIndex + 1);
-        }, 40);
+        }, 1);
         return () => clearTimeout(timeout);
       } else {
         const nextLineDelay = setTimeout(() => {
@@ -36,10 +41,22 @@ function RevealScreen() {
     }
   }, [charIndex, currentLine]);
 
-  const handleSubmit = () => {
-    alert(`Roasting your ${platform} profile:\n${profileLink}`);
-    // optionally navigate or store the link
+  const handleSubmit = async () => {
+    let response = await axios.post("http://127.0.0.1:8080/githubRepo", {"username": profileLink} )
+    setPlatform(null)
+    setShowButtons(false)
+    setGithubRepos(response.data.data)
+    setShowGithubRepos(true)
   };
+
+  const handleRepoRoast = async (repo) => {
+    let response = await axios.post("http://127.0.0.1:8080/githubCommits", {"username": profileLink, "repo" : repo})
+    let rawData= response.data.message
+    console.log(rawData)
+    setRoast(rawData.split("||"))
+    setShowGithubRepos(false)
+
+  }
 
   return (
     <div className="reveal-container">
@@ -51,38 +68,66 @@ function RevealScreen() {
       {showButtons && !platform && (
         <div className="button-group vertical">
           <button className="cta full" onClick={() => setPlatform('LinkedIn')}>
-            🔗 Log in with LinkedIn
+            🔗 Roast my LinkedIn
           </button>
           <button className="cta full" onClick={() => setPlatform('GitHub')}>
-            🐙 Log in with GitHub
+            🐙 Roast my GitHub
           </button>
-          <button className="ghost">how do you know what's cringe?</button>
         </div>
       )}
 
       {platform && (
         <div style={{ marginTop: '2rem', width: '100%', maxWidth: '400px' }}>
-          <p>Enter your {platform} profile link:</p>
+          <p>Enter your {platform} profile url or username:</p>
           <input
             type="text"
             value={profileLink}
             onChange={(e) => setProfileLink(e.target.value)}
-            placeholder={`Paste your ${platform} profile URL`}
+            placeholder={`Paste your ${platform} profile URL:`}
             style={{
               width: '100%',
               padding: '0.6rem',
               borderRadius: '8px',
-              border: '1px solid #ccc',
               fontSize: '1rem',
               marginBottom: '1rem'
             }}
           />
           <br />
-          <button className="cta full" onClick={handleSubmit} disabled={!profileLink}>
-            Roast Me 🔥
+          <button className="cta full center" onClick={handleSubmit}>
+            Roast Me
           </button>
         </div>
       )}
+      { showGithubRepos && (
+        <div className='button-group vertical'>
+        {
+        githubRepos.map((repo, index) => (
+                <button
+                  key={index}
+                  className="cta full center" 
+                  onClick={() => handleRepoRoast(repo)}
+                >
+                  {repo}
+                </button>
+        ))
+      }
+      </div>)
+      }
+      { roast && (
+        <div className='button-group vertical'>
+        {
+        roast.map((repo, index) => (
+                <button
+                  key={index}
+                  className="cta full center" 
+                  onClick={() => handleRepoRoast(repo)}
+                >
+                  {repo}
+                </button>
+        ))
+      }
+      </div>)
+      }
     </div>
   );
 }
