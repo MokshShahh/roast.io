@@ -1,5 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import horizontal from './horizontal-pic.png';
+import {
+    motion
+} from 'framer-motion';
 import '../App.css';
 
 function Hero() {
@@ -9,9 +12,12 @@ function Hero() {
         <div className="hero">
             <h1>From Commits To Cringe:<br />Let’s Review You</h1>
             <p className="subtitle">Your connections won't save you now.<br />Not even that VP in your network.</p>
-            <button className="cta" onClick={()=>{navigate('./loading')}}>
+            <motion.button
+            whileTap="tap"
+            whileHover="hover"
+            className="cta" onClick={()=>{navigate('./loading')}}>
                 Find Out
-            </button>
+            </motion.button>
             <br />
             <img src={horizontal} alt="Logo" style={{ width: '700px', marginTop: '10px' }} />
             <div className="footer-wrapper">

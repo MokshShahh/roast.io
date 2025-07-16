@@ -42,6 +42,8 @@ function RevealScreen() {
   }, [charIndex, currentLine]);
 
   const handleSubmit = async () => {
+    setGithubRepos("Loading...")
+    setTimeout(()=>{}, 200)
     let response = await axios.post("http://127.0.0.1:8080/githubRepo", {"username": profileLink} )
     setPlatform(null)
     setShowButtons(false)
@@ -89,7 +91,8 @@ function RevealScreen() {
               padding: '0.6rem',
               borderRadius: '8px',
               fontSize: '1rem',
-              marginBottom: '1rem'
+              marginBottom: '1rem',
+              color: 'black'
             }}
           />
           <br />
@@ -119,7 +122,7 @@ function RevealScreen() {
         roast.map((repo, index) => (
                 <button
                   key={index}
-                  className="cta full center" 
+                  className="cta full center roasts" 
                   onClick={() => handleRepoRoast(repo)}
                 >
                   {repo}

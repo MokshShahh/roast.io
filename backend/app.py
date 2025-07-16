@@ -4,6 +4,14 @@ import requests
 import os
 from dotenv import load_dotenv
 from groq import Groq
+import time
+import csv
+import os
+from datetime import datetime
+from urllib.parse import urlparse
+import requests
+import json
+
 
 def chat(type, prompt, repo=None):
     if type=="linkedin":
@@ -73,6 +81,39 @@ def chat(type, prompt, repo=None):
     )
 
     return(chat_completion.choices[0].message.content)
+
+def scrape_linkedin(profile_url):
+
+    APIFY_API_TOKEN = os.getenv("APIFY_API_TOKEN")
+    ACTOR_TASK_ID = "moksh13112006~linkedin-profile-posts-scraper-no-cookies-task"
+    APIFY_API_BASE_URL = "https://api.apify.com/v2"
+    CUSTOM_PROFILE_URL = profile_url
+    actor_input_payload = {
+        "startUrls": [{"url": CUSTOM_PROFILE_URL}],
+        "resultsLimit": 5
+    }
+
+    endpoint_url = f"{APIFY_API_BASE_URL}/actor-tasks/{ACTOR_TASK_ID}/run-sync-get-dataset-items"
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+    try:
+        response = requests.post(
+            endpoint_url,
+            params={'token': APIFY_API_TOKEN}, 
+            json=actor_input_payload,         
+            headers=headers,                  
+            timeout=300                      
+        )
+        response.raise_for_status()
+        scraped_data = response.json()
+        if scraped_data:
+            print(json.dumps(scraped_data, indent=2))
+            return jsonify(scraped_data)
+    except:
+        return jsonify({"success":False}), 401
+
 
 app = Flask(__name__)
 CORS(app)
