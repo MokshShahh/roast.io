@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './RevealScreen.css';
+import LoadingBar from './loadingBar'; 
 
 function RevealScreen() {
   const lines = [
@@ -18,6 +19,7 @@ function RevealScreen() {
   const [roast, setRoast] = useState(false);
   const [showGithubRepos, setShowGithubRepos] = useState(false)
   const [githubRepos, setGithubRepos] = useState()
+  const [isLoading, setIsLoading] = useState(false);
 
 
   useEffect(() => {
@@ -26,7 +28,7 @@ function RevealScreen() {
         const timeout = setTimeout(() => {
           setDisplayedText(prev => prev + lines[currentLine][charIndex]);
           setCharIndex(charIndex + 1);
-        }, 1);
+        }, 40);
         return () => clearTimeout(timeout);
       } else {
         const nextLineDelay = setTimeout(() => {
@@ -39,25 +41,45 @@ function RevealScreen() {
     } else {
       setTimeout(() => setShowButtons(true), 600);
     }
-  }, [charIndex, currentLine]);
+  }, [charIndex, currentLine, lines.length]); 
 
   const handleSubmit = async () => {
-    setGithubRepos("Loading...")
-    setTimeout(()=>{}, 200)
-    let response = await axios.post("http://127.0.0.1:8080/githubRepo", {"username": profileLink} )
-    setPlatform(null)
-    setShowButtons(false)
-    setGithubRepos(response.data.data)
-    setShowGithubRepos(true)
+    setIsLoading(true); 
+    try { 
+        if (profileLink.includes('linkedin')){
+          let response = await axios.post("http://127.0.0.1:8080/linkedin", {"username": profileLink})
+          setShowButtons(false)
+          setPlatform(null)
+          let rawData= response.data.message
+          console.log(rawData)
+          setRoast(rawData.split("||"))
+        } else { 
+            let response = await axios.post("http://127.0.0.1:8080/githubRepo", {"username": profileLink} )
+            setPlatform(null)
+            setShowButtons(false)
+            setGithubRepos(response.data.data)
+            setShowGithubRepos(true)
+        }
+    } catch (error) {
+        console.error("API call failed:", error);
+    } finally {
+        setIsLoading(false); 
+    }
   };
 
   const handleRepoRoast = async (repo) => {
-    let response = await axios.post("http://127.0.0.1:8080/githubCommits", {"username": profileLink, "repo" : repo})
-    let rawData= response.data.message
-    console.log(rawData)
-    setRoast(rawData.split("||"))
-    setShowGithubRepos(false)
-
+    setIsLoading(true);
+    try { 
+        let response = await axios.post("http://127.0.0.1:8080/githubCommits", {"username": profileLink, "repo" : repo})
+        let rawData= response.data.message
+        console.log(rawData)
+        setRoast(rawData.split("||"))
+        setShowGithubRepos(false)
+    } catch (error) {
+        console.error("API call failed:", error);
+    } finally {
+        setIsLoading(false);
+    }
   }
 
   return (
@@ -67,7 +89,9 @@ function RevealScreen() {
         <span className="cursor">|</span>
       </pre>
 
-      {showButtons && !platform && (
+      {isLoading && <LoadingBar />}
+
+      {showButtons && !platform && !isLoading && (
         <div className="button-group vertical">
           <button className="cta full" onClick={() => setPlatform('LinkedIn')}>
             🔗 Roast my LinkedIn
@@ -78,7 +102,7 @@ function RevealScreen() {
         </div>
       )}
 
-      {platform && (
+      {platform && !isLoading && (
         <div style={{ marginTop: '2rem', width: '100%', maxWidth: '400px' }}>
           <p>Enter your {platform} profile url or username:</p>
           <input
@@ -94,21 +118,23 @@ function RevealScreen() {
               marginBottom: '1rem',
               color: 'black'
             }}
+            disabled={isLoading}
           />
           <br />
-          <button className="cta full center" onClick={handleSubmit}>
-            Roast Me
+          <button className="cta full center" onClick={handleSubmit} disabled={isLoading}>
+            {isLoading ? 'Loading...' : 'Roast Me'}
           </button>
         </div>
       )}
-      { showGithubRepos && (
+      { showGithubRepos && !isLoading && (
         <div className='button-group vertical'>
         {
         githubRepos.map((repo, index) => (
                 <button
                   key={index}
-                  className="cta full center" 
+                  className="cta full center"
                   onClick={() => handleRepoRoast(repo)}
+                  disabled={isLoading}
                 >
                   {repo}
                 </button>
@@ -116,16 +142,15 @@ function RevealScreen() {
       }
       </div>)
       }
-      { roast && (
+      { roast && !isLoading && (
         <div className='button-group vertical'>
         {
         roast.map((repo, index) => (
                 <button
                   key={index}
-                  className="cta full center roasts" 
-                  onClick={() => handleRepoRoast(repo)}
+                  className="cta full center roasts"
                 >
-                  {repo}
+                  <div className='typewriter roast'>{repo.trim()}</div>
                 </button>
         ))
       }
