@@ -15,6 +15,7 @@ import json
 
 def chat(type, prompt, repo=None):
     if type=="linkedin":
+        prompt=json.dumps(prompt)
         sys_prompt="""
                     You are a sarcastic, witty, and hilariously observant roast bot, specializing in LinkedIn profiles. Your primary goal is to generate short, sharp, and funny roasts based on provided LinkedIn profile information (e.g., "About" section, posts, skills, job titles, experiences).
                     Here are your core directives   
@@ -32,7 +33,7 @@ def chat(type, prompt, repo=None):
                          Statements that imply a profound impact from something mundane.
                          Vague or overly broad "skills."
 
-                    When you receive a LinkedIn profile's text, analyze it for these elements and craft your best sarcastic and witty roast. Next is their linnkedin profile. ONLY REPLY WITH THESE ROASTS AND NOTHING ELSE. THERE SHOULD BE A MINIMUM OF 6 ROASTS ALL SEPERATED BY "||".
+                    When you receive a LinkedIn profile's post_content, headline, post_reactions in an array (one array index for each post), analyze it for these elements and craft your best sarcastic and witty roast. Next is their linnkedin profile. ONLY REPLY WITH THESE ROASTS AND NOTHING ELSE AND THE FIRST ROAST HAS TO BE ABOUT THEIR HEADLINE AND FRAME THE ROASTS AS IF YOU ARE TALKING TO THE PERSON (USE YOUR, YOU ETC). THERE SHOULD BE A MINIMUM OF 6 ROASTS ALL SEPERATED BY "||".
 
                     ---"""
     else:
@@ -57,7 +58,7 @@ def chat(type, prompt, repo=None):
                     Committing large binary files or unnecessary dependencies.
                     The ratio of "feat" commits to "fix" commits, especially if fixes heavily outweigh features.
                     Commits with emojis that feel out of place or overly enthusiastic for a small change.
-            When you receive GitHub commit data (e.g., commit messages, commit history overview, file changes), analyze it for these elements and craft your best sarcastic and witty roast. The next message will be a list of their commit messages seperated by "||" in a repository called {repo} ONLY REPLY WITH THESE ROASTS AND NOTHING ELSE, THERE SHOULD BE A MINIMUM OF 6 ROASTS ALL SEPERATED BY "||".
+            When you receive GitHub commit data (e.g., commit messages, commit history overview, file changes), analyze it for these elements and craft your best sarcastic and witty roast.FRAME THE ROASTS AS IF YOU ARE TALKING TO THE PERSON (USE YOUR, YOU ETC). The next message will be a list of their commit messages seperated by "||" in a repository called {repo} ONLY REPLY WITH THESE ROASTS AND NOTHING ELSE, THERE SHOULD BE A MINIMUM OF 6 ROASTS ALL SEPERATED BY "||".
             """
 
     client = Groq(
@@ -89,8 +90,7 @@ def scrape_linkedin(profile_url):
     APIFY_API_BASE_URL = "https://api.apify.com/v2"
     CUSTOM_PROFILE_URL = profile_url
     actor_input_payload = {
-        "startUrls": [{"url": CUSTOM_PROFILE_URL}],
-        "resultsLimit": 5
+        "username" : CUSTOM_PROFILE_URL
     }
 
     endpoint_url = f"{APIFY_API_BASE_URL}/actor-tasks/{ACTOR_TASK_ID}/run-sync-get-dataset-items"
@@ -109,15 +109,15 @@ def scrape_linkedin(profile_url):
         response.raise_for_status()
         scraped_data = response.json()
         if scraped_data:
-            print(json.dumps(scraped_data, indent=2))
-            return jsonify(scraped_data)
+            # print(json.dumps(scraped_data, indent=2))
+            return jsonify({"message":scraped_data})
     except:
         return jsonify({"success":False}), 401
-
 
 app = Flask(__name__)
 CORS(app)
 load_dotenv()
+
 
 @app.route("/")
 def hello_world():
@@ -147,6 +147,25 @@ def commits():
     commit_messages = [c['commit']['message'] for c in commits]
     message = chat("github", "||".join(commit_messages), repo)
     print(message)
+    return jsonify({"message":message})
+
+@app.route("/linkedin", methods=["POST"])
+def linkedin():
+    # data=request.get_json()
+    # username=data.get("username")
+    data=request.get_json()
+    username=data.get("username")
+    # repo=data.get("repo")
+    data = scrape_linkedin(username)
+    data=data.json
+    final=[]
+    for i in range(len(data['message'])):
+        final.append({'headline':data['message'][i]['author']['headline']})
+        final.append({'post reactions':data['message'][i]['stats']['total_reactions']})
+        final.append({'post_content':data['message'][i]['text']})
+
+    message = chat('linkedin', final)
+
     return jsonify({"message":message})
 
 

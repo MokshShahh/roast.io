@@ -17,7 +17,6 @@ body{
   color: #111;
   line-height: 1.6;
   text-align: left;
-  min-height: 6rem;
   padding: 1rem;
 }
 
@@ -91,6 +90,11 @@ input::placeholder{
   text-align: center !important;
 }
 
+/* .roast{
+  padding: 0;
+  margin-bottom: 0;
+  text-align: center;
+} */
 .roasts{
   min-width: 50vw !important;
 }
