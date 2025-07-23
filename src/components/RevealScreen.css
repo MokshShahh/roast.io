@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
   font-family: 'Inconsolata', monospace;
-   padding: 4rem 2rem 2rem;
+  padding: 4rem 2rem 2rem;
   justify-content:flex-start;
 }
 body{
@@ -17,7 +17,6 @@ body{
   color: #111;
   line-height: 1.6;
   text-align: left;
-  padding: 1rem;
 }
 
 .cursor {
@@ -90,11 +89,13 @@ input::placeholder{
   text-align: center !important;
 }
 
-/* .roast{
-  padding: 0;
-  margin-bottom: 0;
-  text-align: center;
-} */
 .roasts{
   min-width: 50vw !important;
+}
+.h2 {
+  font-size: 3rem;
+  margin-top: 0;
+  line-height: 1.2;
+  font-family: 'Recoleta Regular';
+  font-weight: 400;
 }

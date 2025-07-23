@@ -129,7 +129,7 @@ def repos():
     username=data.get("username")
     url = f"https://api.github.com/users/{username}/repos"
     
-    response = requests.get(url, params={'per_page': 10}) # Fetch up to 100 repos
+    response = requests.get(url, params={'per_page': 10}) # Fetch up to 10 repos
     response.raise_for_status()
     repos_data = response.json()
     
@@ -151,11 +151,8 @@ def commits():
 
 @app.route("/linkedin", methods=["POST"])
 def linkedin():
-    # data=request.get_json()
-    # username=data.get("username")
     data=request.get_json()
     username=data.get("username")
-    # repo=data.get("repo")
     data = scrape_linkedin(username)
     data=data.json
     final=[]

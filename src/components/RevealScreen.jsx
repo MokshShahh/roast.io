@@ -44,6 +44,7 @@ function RevealScreen() {
   }, [charIndex, currentLine, lines.length]); 
 
   const handleSubmit = async () => {
+    setRoast(false)
     setIsLoading(true); 
     try { 
         if (profileLink.includes('linkedin')){
@@ -53,12 +54,16 @@ function RevealScreen() {
           let rawData= response.data.message
           console.log(rawData)
           setRoast(rawData.split("||"))
-        } else { 
+          setShowButtons(true)
+
+        } 
+        else {
             let response = await axios.post("http://127.0.0.1:8080/githubRepo", {"username": profileLink} )
             setPlatform(null)
             setShowButtons(false)
             setGithubRepos(response.data.data)
             setShowGithubRepos(true)
+            setShowButtons(true)
         }
     } catch (error) {
         console.error("API call failed:", error);
@@ -90,6 +95,42 @@ function RevealScreen() {
       </pre>
 
       {isLoading && <LoadingBar />}
+      { showGithubRepos && !isLoading && (
+        <>
+        <h2>Choose A Github Repo You Want To Roast:<br /></h2>
+        <div className='button-group vertical'>
+        {
+        githubRepos.map((repo, index) => (
+                <button
+                  key={index}
+                  className="cta full center"
+                  onClick={() => handleRepoRoast(repo)}
+                  disabled={isLoading}
+                >
+                  {repo}
+                </button>
+        ))
+      }
+      </div>
+      </>)
+      }
+      { roast && !isLoading && (
+        <>
+        <h2>{profileLink.includes("linkedin")? "Profile, Punctured. ": "Code, Consequence."}</h2>
+        <div className='button-group vertical'>
+        {
+        roast.map((repo, index) => (
+                <button
+                  key={index}
+                  className="cta full center roasts"
+                >
+                  <div className='typewriter roast'>{repo.trim()}</div>
+                </button>
+        ))
+      }
+      </div>
+      </>)
+      }
 
       {showButtons && !platform && !isLoading && (
         <div className="button-group vertical">
@@ -126,36 +167,7 @@ function RevealScreen() {
           </button>
         </div>
       )}
-      { showGithubRepos && !isLoading && (
-        <div className='button-group vertical'>
-        {
-        githubRepos.map((repo, index) => (
-                <button
-                  key={index}
-                  className="cta full center"
-                  onClick={() => handleRepoRoast(repo)}
-                  disabled={isLoading}
-                >
-                  {repo}
-                </button>
-        ))
-      }
-      </div>)
-      }
-      { roast && !isLoading && (
-        <div className='button-group vertical'>
-        {
-        roast.map((repo, index) => (
-                <button
-                  key={index}
-                  className="cta full center roasts"
-                >
-                  <div className='typewriter roast'>{repo.trim()}</div>
-                </button>
-        ))
-      }
-      </div>)
-      }
+      
     </div>
   );
 }
