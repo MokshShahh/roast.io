@@ -1,2 +1,6 @@
-groq
+flask
+flask_cors
 requests
+python-dotenv
+groq
+Flask-Cors

@@ -4,8 +4,6 @@ import requests
 import os
 from dotenv import load_dotenv
 from groq import Groq
-import time
-import csv
 import os
 from datetime import datetime
 from urllib.parse import urlparse
