@@ -48,7 +48,7 @@ function RevealScreen() {
     setIsLoading(true); 
     try { 
         if (profileLink.includes('linkedin')){
-          let response = await axios.post("http://127.0.0.1:8080/linkedin", {"username": profileLink})
+          let response = await axios.post("https://roast-io.onrender.com/linkedin", {"username": profileLink})
           setShowButtons(false)
           setPlatform(null)
           let rawData= response.data.message
@@ -58,7 +58,7 @@ function RevealScreen() {
 
         } 
         else {
-            let response = await axios.post("http://127.0.0.1:8080/githubRepo", {"username": profileLink} )
+            let response = await axios.post("https://roast-io.onrender.com/githubRepo", {"username": profileLink} )
             setPlatform(null)
             setShowButtons(false)
             setGithubRepos(response.data.data)
@@ -75,7 +75,7 @@ function RevealScreen() {
   const handleRepoRoast = async (repo) => {
     setIsLoading(true);
     try { 
-        let response = await axios.post("http://127.0.0.1:8080/githubCommits", {"username": profileLink, "repo" : repo})
+        let response = await axios.post("https://roast-io.onrender.com/githubCommits", {"username": profileLink, "repo" : repo})
         let rawData= response.data.message
         console.log(rawData)
         setRoast(rawData.split("||"))
