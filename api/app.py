@@ -115,7 +115,11 @@ def scrape_linkedin(profile_url):
 app = Flask(__name__)
 CORS(app)
 load_dotenv()
-
+GITHUB_PAT = os.getenv("GITHUB_ACCESS_TOKEN")
+headers = {
+    "Authorization": f"token {GITHUB_PAT}",
+    "Accept": "application/vnd.github.v3+json"
+}
 
 @app.route("/")
 def hello_world():
@@ -127,7 +131,7 @@ def repos():
     username=data.get("username")
     url = f"https://api.github.com/users/{username}/repos"
     
-    response = requests.get(url, params={'per_page': 10}) # Fetch up to 10 repos
+    response = requests.get(url, params={'per_page': 10}, headers=headers) # Fetch up to 10 repos
     response.raise_for_status()
     repos_data = response.json()
     
@@ -140,7 +144,7 @@ def commits():
     username=data.get("username")
     repo=data.get("repo")
     url = f"https://api.github.com/repos/{username}/{repo}/commits"
-    response = requests.get(url,params={'per_page': 10}) #only last 10 commits
+    response = requests.get(url,params={'per_page': 10}, headers=headers) #only last 10 commits
     commits = response.json()
     commit_messages = [c['commit']['message'] for c in commits]
     message = chat("github", "||".join(commit_messages), repo)
