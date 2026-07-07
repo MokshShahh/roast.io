@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useNavigate } from 'react-router-dom';
 import horizontal from './horizontal-pic.png';
 import {
